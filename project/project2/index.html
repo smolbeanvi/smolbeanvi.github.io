@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Vi Le" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 2: Modeling, Testing, and Predicting</title>
+    <meta name="generator" content="Hugo 0.79.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../project/project2/">Project 2: Modeling, Testing, and Predicting</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="vi-le-vtl269" class="section level4">
+<h4>Vi Le vtl269</h4>
+</div>
+<div id="introduction" class="section level3">
+<h3>Introduction:</h3>
+<p><em>The data I chose to use is called <strong>&quot;CASchools&quot;</strong>. This data set includes 420 observations from K-6 and K-8 districts in California and 14 variables. The variables are the following: district (district code), school (school name), county (a factor indicating county), grades (factor that indicates grade span of district), student (shows the total enrollment), teachers (number of teachers), calworks (percentage of those who qualify for income assistance), lunch (percentage of those who qualify for reduced lunch), computer (number of computers), expenditure (spending per student), income (average income for district), english (percent of English learners), read (average reading score) and math (average math score).</em></p>
+</div>
+<div id="manova-testing" class="section level3">
+<h3>MANOVA Testing:</h3>
+<pre class="r"><code>library(AER)
+data(CASchools)
+CAS &lt;- data.frame(CASchools)
+man1&lt;-manova(cbind(read,math)~grades, data=CAS)
+summary(man1)</code></pre>
+<pre><code>## Df Pillai approx F num Df den Df Pr(&gt;F)
+## grades 1 0.029806 6.4055 2 417 0.00182 **
+## Residuals 418
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(man1)</code></pre>
+<pre><code>## Response read :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## grades 1 3603 3602.5 9.0816 0.002739 **
+## Residuals 418 165812 396.7
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response math :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## grades 1 4267 4267.3 12.465 0.0004608 ***
+## Residuals 418 143103 342.4
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>CAS%&gt;%group_by(grades)%&gt;%summarize(mean(read),mean(math))</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   grades `mean(read)` `mean(math)`
+##   &lt;fct&gt;         &lt;dbl&gt;        &lt;dbl&gt;
+## 1 KK-06          662.         661.
+## 2 KK-08          654.         652.</code></pre>
+<pre class="r"><code>pairwise.t.test(CAS$read,
+CAS$grades, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  CAS$read and CAS$grades 
+## 
+##       KK-06 
+## KK-08 0.0027
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(CAS$math,
+CAS$grades, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  CAS$math and CAS$grades 
+## 
+##       KK-06  
+## KK-08 0.00046
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>library(rstatix)
+group &lt;- CAS$grades 
+DVs &lt;- CAS %&gt;% select(read,math)
+sapply(split(DVs,group), mshapiro_test)</code></pre>
+<pre><code>##           KK-06     KK-08      
+## statistic 0.9891862 0.9891282  
+## p.value   0.8681782 0.008977046</code></pre>
+<p><em>A total of 5 tests were performed; 1 MANOVA, 2 ANOVAs and 2 t-tests. The MANOVA provided significant differences among the school for at least once of numerical variables. Pillai = 0.0298, F = 6.406, and p = 0.00182. Univariate ANOVAs were performed as a follow-up and for reading scores the statistics are the following: F = 9.082 and p = 0.00274. For math, the statistics are the following: F = 12.465 and p = 0.000461. Pairwise comparisons (t-tests) were also conducted and since math and reading differed, the alpha value had to be adjusted with the Bonferroni method for controlling Type I error. Thus the alpha is 0.05/5 = 0.01 which no longer shows that everything is significant. The p-value for KK-08 was &lt;0.5 so the main assumptions are violated.</em></p>
+</div>
+<div id="randomisation-test" class="section level3">
+<h3>Randomisation Test:</h3>
+<pre class="r"><code>library(vegan)
+CAS %&gt;% group_by(grades) %&gt;% summarize(means = mean(english)) %&gt;% summarize(mean_diff = diff(means))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   mean_diff
+##       &lt;dbl&gt;
+## 1     -2.82</code></pre>
+<pre class="r"><code>rand_dist &lt;- vector()
+for (i in 1:5000) {
+  new &lt;- data.frame(english = sample(CAS$english), grades = CAS$grades)
+  rand_dist[i] &lt;- mean(new[new$grades ==&quot;KK-06&quot;, ]$english) - mean(new[new$grades == &quot;KK-08&quot;, ]$english)
+}
+{hist(rand_dist,main=&quot;&quot;,ylab=&quot;&quot;); abline(v = c(-2.819127, 2.819127),col=&quot;red&quot;)}</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-2-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mean(rand_dist&gt; 2.819127 | rand_dist &lt; -2.819127) </code></pre>
+<pre><code>## [1] 0.2738</code></pre>
+<p><em>H0: The percent of english learners is the same for KK-08 and KK-06. HA: The percent of english learners is different for KK-08 and KK-06. The calculated p-value is 0.268, therefore, you would reject the H0.</em></p>
+</div>
+<div id="linear-regression-model" class="section level3">
+<h3>Linear Regression Model:</h3>
+<pre class="r"><code>CAS$teachers_c &lt;- CAS$teachers - mean(CAS$teachers)
+CAS$students_c &lt;- CAS$students - mean(CAS$students)
+fit1 &lt;- lm(students_c ~ grades*teachers_c, data=CAS)
+summary(fit1)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = students_c ~ grades * teachers_c, data =
+CAS)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -2459.63 -64.21 11.13 55.56 1867.38
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -4.268e+01 3.845e+01 -1.110 0.268
+## gradesKK-08 4.993e+01 4.154e+01 1.202 0.230
+## teachers_c 2.077e+01 1.826e-01 113.742 &lt;2e-16 ***
+## gradesKK-08:teachers_c 4.425e-04 2.017e-01 0.002 0.998
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 297.5 on 416 degrees of freedom
+## Multiple R-squared: 0.9943, Adjusted R-squared: 0.9942
+## F-statistic: 2.402e+04 on 3 and 416 DF, p-value: &lt;
+2.2e-16</code></pre>
+<pre class="r"><code>coef(fit1)</code></pre>
+<pre><code>## (Intercept) gradesKK-08 teachers_c
+gradesKK-08:teachers_c
+## -4.267970e+01 4.993384e+01 2.076954e+01 4.425248e-04</code></pre>
+<pre class="r"><code>CAS %&gt;% ggplot(aes(teachers_c, students_c))+geom_point()+geom_smooth(method = &#39;lm&#39;,se=F)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(CAS$teachers_c, CAS$students_c)</code></pre>
+<pre><code>## [1] 0.9971161</code></pre>
+<pre class="r"><code>resids&lt;-fit1$residuals
+fitvals&lt;-fit1$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color=&#39;red&#39;)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-3-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot()+geom_histogram(aes(resids))</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-3-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot()+geom_qq(aes(sample=resids))+geom_qq()</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-3-4.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>coeftest(fit1)[,1:2]</code></pre>
+<pre><code>##                             Estimate Std. Error
+## (Intercept)            -4.267970e+01 38.4510776
+## gradesKK-08             4.993384e+01 41.5358332
+## teachers_c              2.076954e+01  0.1826025
+## gradesKK-08:teachers_c  4.425248e-04  0.2016681</code></pre>
+<pre class="r"><code>coeftest(fit1, vcov=vcovHC(fit1))[,1:2]</code></pre>
+<pre><code>##                             Estimate Std. Error
+## (Intercept)            -4.267970e+01 35.5654474
+## gradesKK-08             4.993384e+01 39.6791266
+## teachers_c              2.076954e+01  0.5567891
+## gradesKK-08:teachers_c  4.425248e-04  0.6643997</code></pre>
+<pre class="r"><code>fit &lt;- lm(students~teachers, data=CAS)
+SST &lt;- sum((CAS$students-mean(CAS$students))^2) 
+SST &lt;- sum((CAS$students-mean(CAS$students))^2) 
+SSR &lt;- sum((fit$fitted.values-mean(CAS$students))^2)
+SSE &lt;- sum(fit$residuals^2) 
+SSR/SST</code></pre>
+<pre><code>## [1] 0.9942404</code></pre>
+<p><em>The coefficient was positive, so this would indicate that the when the teacher variable (x-axis) increases, the mean of the students variable (y-axis) will also increase. A ggplot was created to show the interactions between the two variables that have had their mean centered according to the rubric. Homoskedasticity, normality and linearity was violated. There were large residuals seen, so I tested for robust SEs. The corrected SEs robust to the violations of homoskedasticity. The standard errors for the robust differ fron the non-robust. My model explains 99.42% of the variation outcome.</em></p>
+</div>
+<div id="linear-regression-model-bootstrap" class="section level3">
+<h3>Linear Regression Model (bootstrap):</h3>
+<pre class="r"><code>samp_distn&lt;-replicate(5000, {
+boot_dat&lt;-boot_dat&lt;-CAS[sample(nrow(CAS),replace=TRUE),]
+fit&lt;-lm(students_c ~ grades*teachers_c, data=boot_dat)
+coef(fit)
+})
+samp_distn%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>## (Intercept) gradesKK-08 teachers_c
+gradesKK-08:teachers_c
+## 1 34.34544 38.65672 0.4447987 0.5478004</code></pre>
+<p><em>The standard error for the bootstrap is the highest, then original and robust has the smallest SE values. The p-value for the bootstrap is bigger than the original SE p-value and robust SE p-value. </em></p>
+</div>
+<div id="logistic-regression-model" class="section level3">
+<h3>Logistic Regression Model:</h3>
+<pre class="r"><code>library(tidyverse)
+library(lmtest)
+library(plotROC)
+data &lt;- CAS%&gt;%mutate(y=ifelse(grades==&quot;KK-08&quot;,1,0))
+head(data)</code></pre>
+<pre><code>## district school county grades students teachers calworks
+lunch
+## 1 75119 Sunol Glen Unified Alameda KK-08 195 10.90
+0.5102 2.0408
+## 2 61499 Manzanita Elementary Butte KK-08 240 11.15
+15.4167 47.9167
+## 3 61549 Thermalito Union Elementary Butte KK-08 1550
+82.90 55.0323 76.3226
+## 4 61457 Golden Feather Union Elementary Butte KK-08 243
+14.00 36.4754 77.0492
+## 5 61523 Palermo Union Elementary Butte KK-08 1335 71.50
+33.1086 78.4270
+## 6 62042 Burrel Union Elementary Fresno KK-08 137 6.40
+12.3188 86.9565
+## computer expenditure income english read math teachers_c
+students_c y
+## 1 67 6384.911 22.690001 0.000000 691.6 690.0 -118.16738
+-2433.793 1
+## 2 101 5099.381 9.824000 4.583333 660.5 661.9 -117.91738
+-2388.793 1
+## 3 169 5501.955 8.978000 30.000002 636.3 650.9 -46.16737
+-1078.793 1
+## 4 85 7101.831 8.978000 0.000000 651.9 643.5 -115.06738
+-2385.793 1
+## 5 171 5235.988 9.080333 13.857677 641.8 639.9 -57.56738
+-1293.793 1
+## 6 25 5580.147 10.415000 12.408759 605.7 605.4 -122.66738
+-2491.793 1</code></pre>
+<pre class="r"><code>fit2&lt;-glm(y~english,data=data,,family=binomial(link=&quot;logit&quot;))
+coeftest(fit2)</code></pre>
+<pre><code>##
+## z test of coefficients:
+##
+## Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept) 1.9044241 0.1871888 10.1738 &lt;2e-16 ***
+## english -0.0078927 0.0071067 -1.1106 0.2667
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(coef(fit))</code></pre>
+<pre><code>##  (Intercept)     teachers 
+## 6.029519e-23 1.041580e+09</code></pre>
+<pre class="r"><code>#For students=0, log odds is 1.904, so e^1.904 = 6.7127
+#For students=1, log odds is 1.904 + -0.0079 so e^1.899 = 6.679
+logistic&lt;-function(x){exp(x)/(1+exp(x))}
+#confusion matrix
+table(truth=data$grades, prediction=data$english&gt;1)%&gt;%addmargins</code></pre>
+<pre><code>##        prediction
+## truth   FALSE TRUE Sum
+##   KK-06     5   56  61
+##   KK-08    78  281 359
+##   Sum      83  337 420</code></pre>
+<pre class="r"><code>#accuracy
+(56+281)/420</code></pre>
+<pre><code>## [1] 0.802381</code></pre>
+<pre class="r"><code>#TNR specificity
+281/359</code></pre>
+<pre><code>## [1] 0.7827298</code></pre>
+<pre class="r"><code>#TPR sensitivity
+56/61</code></pre>
+<pre><code>## [1] 0.9180328</code></pre>
+<pre class="r"><code>#PPV precision
+56/337</code></pre>
+<pre><code>## [1] 0.1661721</code></pre>
+<pre class="r"><code>#AUC
+widths&lt;-diff(data$y)
+heights&lt;-vector()
+for(i in 1:100) heights[i]&lt;-data$y[i]+data$y[i+1]
+AUC&lt;-sum(heights*widths/2)
+AUC%&gt;%round(3)</code></pre>
+<pre><code>## [1] 0.5</code></pre>
+<pre class="r"><code>#density plot
+CAS$logit&lt;-predict(fit2,type=&quot;link&quot;)
+CAS%&gt;%ggplot()+geom_density(aes(logit,color=grades,fill=grades), alpha=.4)+
+  theme(legend.position=c(.3,.6))+geom_vline(xintercept=2)+xlab(&quot;logit (log-odds)&quot;) +
+  geom_rug(aes(logit,color=grades))</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ROC
+library(plotROC)
+ROCplot&lt;-ggplot(data)+geom_roc(aes(d=y,m=english), n.cuts=0)
+ROCplot                                           </code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-5-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group     AUC
+## 1     1    -1 0.41664</code></pre>
+<p><em>The coefficient intercept estimate is 1.904. When increasing 1 english percent, it multiplies the odds by a factor of 6.679. A confusion matrix table was computed to calculate accuracy (0.802), sensitivity (0.918), specificity (0.783) and precision (0.166). The AUC that was calculated is 0.5, which is considered a bad AUC. A density plot was also generated to visualise accuracy, sensitivity, specificity and precision. An ROC curve was also generated and AUC was calculated from the ROC, AUC = 0.417.</em></p>
+</div>
+<div id="logistic-regression-model-part-ii" class="section level3">
+<h3>Logistic Regression Model (part II):</h3>
+<pre class="r"><code>#fit model
+library(tidyverse)
+library(lmtest)
+library(pROC)
+library(glmnet)
+class_diag&lt;-function(probs,truth){
+  tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1 
+  ord&lt;-order(probs, decreasing=TRUE)
+  probs &lt;- probs[ord]; truth &lt;- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+  TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+  
+  n &lt;- length(TPR)
+  auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+k=10
+data1&lt;-data[sample(nrow(data)),]
+folds&lt;-cut(seq(1:nrow(data)),breaks=k,labels=F)
+diags&lt;-NULL 
+for(i in 1:k){
+  train&lt;-data1[folds!=i,]   
+  test&lt;-data1[folds==i,]
+  truth&lt;-test$y
+  fit&lt;-glm(y~english,data=data,family=&quot;binomial&quot;)
+  probs&lt;-predict(fit,newdata = test,type=&quot;response&quot;)
+  diags&lt;-rbind(diags,class_diag(probs,truth)) 
+}
+summarize_all(diags,mean)</code></pre>
+<pre><code>##         acc sens spec       ppv       auc
+## 1 0.8547619    1    0 0.8547619 0.6036831</code></pre>
+<pre class="r"><code>#10-fold
+k=10
+data &lt;- CAS %&gt;% sample_frac
+data$binary&lt;-ifelse(data$grades==&quot;KK-08&quot;,1,0)
+folds &lt;- ntile(1:nrow(data),n=10) 
+diags&lt;-NULL
+for(i in 1:k){
+train &lt;- data[folds!=i,] 
+test &lt;- data[folds==i,] 
+truth &lt;- test$binary 
+fit &lt;- glm(binary~read+math+english+calworks+students+teachers+income+computer+expenditure,
+data=train, family=&quot;binomial&quot;)
+probs &lt;- predict(fit, newdata=test, type=&quot;response&quot;)
+diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+diags%&gt;%summarize_all(mean)</code></pre>
+<pre><code>##         acc     sens spec       ppv       auc
+## 1 0.8380952 0.975095 0.03 0.8557985 0.7187084</code></pre>
+<pre class="r"><code>#LASSO
+data$binary&lt;-ifelse(data$grades==&quot;KK-08&quot;,1,0)
+y&lt;-as.matrix(data$binary)
+x&lt;-model.matrix(binary~read+math+english+calworks+students+teachers+income+computer+expenditure,data=data)[,-1]
+head(x)</code></pre>
+<pre><code>## read math english calworks students teachers income
+computer expenditure
+## 99 630.4 646.2 39.399998 18.8000 500 22.43 10.26400 70
+5221.461
+## 173 651.3 648.1 6.405847 17.9751 2326 117.80 11.42600
+345 5149.187
+## 393 684.5 682.3 0.000000 3.9924 526 28.02 13.56700 33
+5644.286
+## 143 642.9 647.3 43.750000 12.3990 8416 391.42 12.66990
+1333 5065.911
+## 276 661.7 663.4 9.640718 5.2989 5010 239.40 19.82313 576
+4802.153
+## 71 631.8 636.6 5.485232 19.8312 237 11.00 7.30500 13
+4845.680</code></pre>
+<pre class="r"><code>x&lt;-scale(x)
+head(x)</code></pre>
+<pre><code>## read math english calworks students teachers income
+computer
+## 99 -1.2219255 -0.3808536 1.2923513 0.48485765
+-0.54401629 -0.56748366 -0.6992340 -0.52880466
+## 173 -0.1825389 -0.2795450 -0.5119953 0.41284433
+-0.07737918 -0.05996069 -0.5384234 0.09429588
+## 393 1.4685475 1.5440470 -0.8623109 -0.80783818
+-0.53737195 -0.53773580 -0.2421276 -0.61264000
+## 143 -0.6002817 -0.3222014 1.5302393 -0.07394629
+1.47892969 1.39614122 -0.3662785 2.33292618
+## 276 0.3346699 0.5362748 -0.3350903 -0.69378138
+0.60852115 0.58714834 0.6236654 0.61770033
+## 71 -1.1523032 -0.8927409 -0.5623408 0.57488092
+-0.61122634 -0.62830979 -1.1087338 -0.65795640
+## expenditure
+## 99 -0.1434631
+## 173 -0.2574720
+## 393 0.5235198
+## 143 -0.3888342
+## 276 -0.8048981
+## 71 -0.7362361</code></pre>
+<pre class="r"><code>cv&lt;-cv.glmnet(x,y,family=&quot;binomial&quot;)
+lasso&lt;-glmnet(x,y,family=&quot;binomial&quot;,lambda=cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 10 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                      s0
+## (Intercept)  1.80025286
+## read         .         
+## math        -0.19995443
+## english     -0.02879731
+## calworks     .         
+## students     .         
+## teachers     .         
+## income       .         
+## computer     .         
+## expenditure -0.18055190</code></pre>
+<pre class="r"><code>#10-fold CV
+k=10
+data &lt;- CAS %&gt;% sample_frac 
+folds &lt;- ntile(1:nrow(data),n=10) 
+data$binary&lt;-ifelse(data$grades==&quot;KK-08&quot;,1,0)
+diags&lt;-NULL
+for(i in 1:k){
+train &lt;- data[folds!=i,] 
+test &lt;- data[folds==i,] 
+truth &lt;- test$binary 
+fit &lt;- glm(binary~math+expenditure+english,
+data=train, family=&quot;binomial&quot;)
+probs &lt;- predict(fit, newdata=test, type=&quot;response&quot;)
+diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+diags%&gt;%summarize_all(mean)</code></pre>
+<pre><code>##        acc      sens       spec       ppv       auc
+## 1 0.847619 0.9829034 0.05666667 0.8590197 0.7500011</code></pre>
+<p><em>The accuracy of the fit model is 0.855, sensitivity is 1, specificity = 0, percision is 0.855 and the AUC is 0.581. The When the 10-fold CV was performed, accuracy = 0.845, sensitivity = 0.984, specificity = 0.054 and percision = 0.857. The AUC was 0.742 which is relatively similar to the average value of the diagnostics. LASSO was performed on the binary variable and all the other variables and the variables that were retained for the 10-fold CV are math and expenditure. The AUC when the 10-fold cross validation was performed is 0.668. From comparing the two models, it did not show the same AUC value. There was an increase in AUC so that does not indicate a lot of overfitting. </em></p>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

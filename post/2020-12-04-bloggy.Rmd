@@ -1,0 +1,13 @@
+---
+title: bloggy
+author: ''
+date: '2020-12-04'
+slug: bloggy
+categories: []
+tags: []
+description: ''
+---
+[Link to project 1](/project/project1/)
+```{R}
+10*10
+```

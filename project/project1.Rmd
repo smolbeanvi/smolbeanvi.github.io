@@ -1,0 +1,107 @@
+---
+title: "Project 1"
+author: "SDS348 Fall 2020"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = "center", warning = F, message = F,
+tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))
+```
+
+#### Vi Le   vtl269
+
+### Introduction: 
+*The two datasets that I have chosen are MathAchSchool and MathAchieve. The MathAchieve data was acquired by Steve Walker and the MathAchSchool data was made to accompany the MathAch data. I chose these two datasets because I wanted to see the data and the variables that went into it. In the MathAch data, the varaibles are school (school ID) , minority (yes or no factor), sex (male or female), SES (a numerical vector on how many socioeconomic statuses the student faces), MathAch (a numeric vector of mathematics achievement scores) and MEANSES (a numeric vector of the mean SES for the school). Each row in this dataframe contains information for only one student. In the MathAchSchool data, the variables are school (school ID), size (number of students in the school), sector (public or catholic), PRACAD (a numeric vector giving the percentage of students on the academic track), DISCLIM (a numeric vector measuring the discrimination climate), HIMINTY (0 or 1 factor) and MEANSES (a numeric vector giving the mean SES score).*
+
+
+### Joining/Merging:
+
+```{R}
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(nlme)
+
+MathAchSchool <- MathAchSchool %>% mutate(School = as.numeric(School))
+MathAchieve <- MathAchieve %>% mutate(School = as.numeric(School))
+NewMathAch <- MathAchieve %>% full_join(MathAchSchool, by="School")
+print(NewMathAch)
+```
+*I chose to run a full join to merge my datasets together. For the MathAch dataset, there were 7185 observations and in the MathAchSchool dataset, there were 160 observations. For the new df(NewMatchAch), there were no observations that were dropped. All the variables from the two datasets merged together to give an overall greater view of the data since the schools in both datasets are correlated. They share the same school ID. The difference is in MathAchieve, it shows every student individually and their minority, sex, SES, etc. *
+
+### Tidying:
+
+```{R}
+library(tidyverse)
+longdata <- NewMathAch %>% pivot_longer(cols=c("MEANSES.x","MEANSES.y"))
+print(longdata)
+longdata %>% pivot_wider(names_from="name", values_from="value")
+```
+*To show both skills of tidying, I made the dataset longer by conjoining the MEANSES.x and MEANSES.y columns together. By doing so, this allowed the data of MEANSES.x and MEANSES.y to be viewed right under each other rather than being six columns apart. I then tidyed the dataset back to the original (but better), since now the two columns are right next to one another.*
+
+### Wrangling:
+
+```{R}
+library(dplyr)
+sub_NewMathAch <- NewMathAch %>% mutate(subMEANSES = MEANSES.x - MEANSES.y)
+print(sub_NewMathAch)
+quantile(sub_NewMathAch$subMEANSES)
+sub_NewMathAch %>% dplyr::select(Minority, SES, Sector, subMEANSES) %>% glimpse() %>% arrange(SES)
+sub_NewMathAch %>% filter(sub_NewMathAch$Minority == "Yes") %>% group_by(Sector) %>% count(Sector, sort = TRUE)
+submean <- sub_NewMathAch %>% group_by(Minority, Sector) %>% summarize(mean(subMEANSES, na.rm=T))
+print(submean)
+sub_NewMathAch %>% group_by(Sex, MathAch) %>% summarize(min(SES))
+sd(sub_NewMathAch$SES)
+sub_NewMathAch %>% group_by(School) %>% summarize(Size=n())
+cormat <- sub_NewMathAch %>% select_if(is.numeric) %>% cor(use="pair")
+print(cormat)
+sub_NewMathAch %>% group_by(Minority) %>% summarize(max(SES))
+```
+*The first summary statistic (SS) I created was to generate a new variable that was the difference between MEANSES.x and MEANSES.y by using the mutate function. Then I used the quantile function to see the quantiles corresponding to the given numeric vector that was just created. The third SS was done to select the following variables: Minority, SES, Sector and subMEANSES and to sort the data frame by SES. This was completed to see if Minority and Sector had a factor of SES. The next SS was a simple one, it was just to see how many students were a minority in the type of school (Public or Catholic). The fifth SS was to group by Minority and Sector and the mean of the subtracted MEANSES values.*
+
+
+*The sixth SS was created to group by Sex and MathAch (a numeric vector of mathematics achievement scores) and see the minimum SES values. The next SS was to see what the standard deviation of the values in SES. The eigthth SS was to see the number of observations (the size) in each school. The next SS was to compute matrices between all the numeric variables in the dataset. The last SS was to was created to group by Minority and see the max SES values that are correlated with the minority status.*
+
+### Visualising:
+```{R fig.height=5}
+ggplot(sub_NewMathAch, aes(x = Minority, y = MathAch, fill=Sex)) + scale_y_continuous(name="MathAch Scores", limits=c(0, 25)) +
+geom_bar(aes(y=MathAch),stat="summary", position="dodge")+
+geom_errorbar(stat="summary",position="dodge") + ggtitle("Does Minority and Sex Affect MathAch Scores?") + scale_fill_brewer(palette = "Oranges")
+
+ggplot() + geom_point(data = sub_NewMathAch, aes(x = PRACAD, y = SES, shape = Sector, color = Sector))+ ggtitle("Does Sector and SES Play a Role on Academic Track?")
+
+sub_NewMathAch%>%select_if(is.numeric)%>%cor%>%as.data.frame%>%
+rownames_to_column%>%pivot_longer(-1)%>%
+ggplot(aes(rowname,name,fill=value))+geom_tile()+
+geom_text(aes(label=round(value,2)))+scale_fill_gradient2(low="yellow", mid="pink", high="blue")+xlab("")+ylab("")
+```
+*For the first plot, I wanted to see if there was an apparent trend for being a minority or not. Additionally, I wanted to see if sex while being a minority played a role on MathAch scores. From this plot, it can be concluded that if you are a minority, your scores will be lower. It also tells you that sex plays a role on your scores. In both scenarios, minority or not, females scored lower in general. If you are a female minority, your scores averaged out to be the lowest. Non-minority males score the highest.*
+
+
+*The second plot depicts the type of school you go to, SES (a numeric vector of socio-economic status), and PRACAD (a numeric vector giving the percentage of students on the academic track). For SES, there isn't a clear trend/affect on PRCAD. The values all range with how on track you are, no clear relationship is shown. On the otherhand, Sector does seem to have an affect on PRACAD. Those who attend a Catholic school seem to be more on track than those that attend Public school.*
+
+
+*The correlation heatmap shows you all the correlations between the multiple, numeric vairables in the dataset. When the same variables align with themselves, the correlation is 1. This is because they are the same values so their correlation value is a perfect 1. This is also because the heatmap is diagonally symmetrical. All the values in this heatmap ranges from -1 to 1, values that are closer to zero means that there is no linear trend between the two variables. Values closer to 1 means that they are more related. A correlation closer to -1 is similar, but instead of both increasing one variable will decrease as the other increases. Values above 0 means that they are positively correlated while values below 0 means that they are negatively correlated.*
+
+### Dimensionality Reduction
+```{R}
+library(cluster)
+pam1 <- sub_NewMathAch %>% pam(k=6)
+print(pam1)
+clust <- sub_NewMathAch %>% mutate(cluster = as.factor(pam1$clustering))
+clust %>% ggplot(aes(School, DISCLIM, color=Minority, shape=cluster)) + geom_point() + ggtitle(" Cluster on Discrimination Climate, School and Minority Status")
+
+```
+*From viewing the clustering plot, there seems to be an almost even distrubution among the whole plot. The discrimination climate (DISCLIM) variable has no heavily concentrated regions in any of the schools. I chose to cluster with the school and minority variables since I thought the DISCLIM values would be heavily concentrated with the schools that have more students who are minorities, but this doesn't seem like it's the case.* 
+
+---
+
+```{R, echo=F}
+## DO NOT DELETE OR MODIFY THIS CHUNK: IT MUST BE PRESENT TO RECEIVE CREDIT FOR THE ASSIGNMENT
+sessionInfo(); Sys.time(); Sys.info()
+```

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on Vi Le</title>
+    <link>/project/</link>
+    <description>Recent content in Projects on Vi Le</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language><atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Project 1</title>
+      <link>/project/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project1/</guid>
+      <description>Vi Le vtl269  Introduction: The two datasets that I have chosen are MathAchSchool and MathAchieve. The MathAchieve data was acquired by Steve Walker and the MathAchSchool data was made to accompany the MathAch data. I chose these two datasets because I wanted to see the data and the variables that went into it. In the MathAch data, the varaibles are school (school ID) , minority (yes or no factor), sex (male or female), SES (a numerical vector on how many socioeconomic statuses the student faces), MathAch (a numeric vector of mathematics achievement scores) and MEANSES (a numeric vector of the mean SES for the school).</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Modeling, Testing, and Predicting</title>
+      <link>/project/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project2/</guid>
+      <description>Vi Le vtl269  Introduction: The data I chose to use is called &amp;quot;CASchools&amp;quot;. This data set includes 420 observations from K-6 and K-8 districts in California and 14 variables. The variables are the following: district (district code), school (school name), county (a factor indicating county), grades (factor that indicates grade span of district), student (shows the total enrollment), teachers (number of teachers), calworks (percentage of those who qualify for income assistance), lunch (percentage of those who qualify for reduced lunch), computer (number of computers), expenditure (spending per student), income (average income for district), english (percent of English learners), read (average reading score) and math (average math score).</description>
+    </item>
+    
+  </channel>
+</rss>

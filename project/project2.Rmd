@@ -1,0 +1,239 @@
+---
+title: 'Project 2: Modeling, Testing, and Predicting'
+author: "SDS348"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align="center",warning=FALSE,message=FALSE,fig.width=8, fig.height=5, linewidth=60)
+options(tibble.width = 100,width = 100)
+library(tidyverse)
+```
+
+#### Vi Le vtl269
+
+### Introduction: 
+
+*The data I chose to use is called **"CASchools"**. This data set includes 420 observations from  K-6 and K-8 districts in California and 14 variables. The variables are the following: district (district code), school (school name), county (a factor indicating county), grades (factor that indicates grade span of district), student (shows the total enrollment), teachers (number of teachers), calworks (percentage of those who qualify for income assistance), lunch (percentage of those who qualify for reduced lunch), computer (number of computers), expenditure (spending per student), income (average income for district), english (percent of English learners), read (average reading score) and math (average math score).*
+
+### MANOVA Testing:
+```{R}
+library(AER)
+data(CASchools)
+CAS <- data.frame(CASchools)
+man1<-manova(cbind(read,math)~grades, data=CAS)
+summary(man1)
+summary.aov(man1)
+CAS%>%group_by(grades)%>%summarize(mean(read),mean(math))
+pairwise.t.test(CAS$read,
+CAS$grades, p.adj="none")
+pairwise.t.test(CAS$math,
+CAS$grades, p.adj="none")
+library(rstatix)
+group <- CAS$grades 
+DVs <- CAS %>% select(read,math)
+sapply(split(DVs,group), mshapiro_test)
+```
+*A total of 5 tests were performed; 1 MANOVA, 2 ANOVAs and 2 t-tests. The MANOVA provided significant differences among the school for at least once of numerical variables. Pillai = 0.0298, F = 6.406, and p = 0.00182. Univariate ANOVAs were performed as a follow-up and for reading scores the statistics are the following: F = 9.082 and p = 0.00274. For math, the statistics are the following: F = 12.465 and p = 0.000461. Pairwise comparisons (t-tests) were also conducted and since math and reading differed, the alpha value had to be adjusted with the Bonferroni method for controlling Type I error. Thus the alpha is 0.05/5 = 0.01 which no longer shows that everything is significant. The p-value for KK-08 was <0.5 so the main assumptions are violated.*
+
+### Randomisation Test:
+```{R}
+library(vegan)
+CAS %>% group_by(grades) %>% summarize(means = mean(english)) %>% summarize(mean_diff = diff(means))
+rand_dist <- vector()
+for (i in 1:5000) {
+  new <- data.frame(english = sample(CAS$english), grades = CAS$grades)
+  rand_dist[i] <- mean(new[new$grades =="KK-06", ]$english) - mean(new[new$grades == "KK-08", ]$english)
+}
+{hist(rand_dist,main="",ylab=""); abline(v = c(-2.819127, 2.819127),col="red")}
+mean(rand_dist> 2.819127 | rand_dist < -2.819127) 
+```
+*H0: The percent of english learners is the same for KK-08 and KK-06. HA: The percent of english learners is different for KK-08 and KK-06. The calculated p-value is 0.268, therefore, you would reject the H0.*
+
+### Linear Regression Model:
+```{R}
+CAS$teachers_c <- CAS$teachers - mean(CAS$teachers)
+CAS$students_c <- CAS$students - mean(CAS$students)
+fit1 <- lm(students_c ~ grades*teachers_c, data=CAS)
+summary(fit1)
+coef(fit1)
+CAS %>% ggplot(aes(teachers_c, students_c))+geom_point()+geom_smooth(method = 'lm',se=F)
+cor(CAS$teachers_c, CAS$students_c)
+resids<-fit1$residuals
+fitvals<-fit1$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color='red')
+ggplot()+geom_histogram(aes(resids))
+ggplot()+geom_qq(aes(sample=resids))+geom_qq()
+coeftest(fit1)[,1:2]
+coeftest(fit1, vcov=vcovHC(fit1))[,1:2]
+fit <- lm(students~teachers, data=CAS)
+SST <- sum((CAS$students-mean(CAS$students))^2) 
+SST <- sum((CAS$students-mean(CAS$students))^2) 
+SSR <- sum((fit$fitted.values-mean(CAS$students))^2)
+SSE <- sum(fit$residuals^2) 
+SSR/SST
+```
+*The coefficient was positive, so this would indicate that the when the teacher variable (x-axis) increases, the mean of the students variable (y-axis) will also increase. A ggplot was created to show the interactions between the two variables that have had their mean centered according to the rubric. Homoskedasticity, normality and linearity was violated. There were large residuals seen, so I tested for robust SEs. The corrected SEs robust to the violations of homoskedasticity. The standard errors for the robust differ fron the non-robust. My model explains 99.42% of the variation outcome.*
+
+### Linear Regression Model (bootstrap):
+```{R}
+samp_distn<-replicate(5000, {
+boot_dat<-boot_dat<-CAS[sample(nrow(CAS),replace=TRUE),]
+fit<-lm(students_c ~ grades*teachers_c, data=boot_dat)
+coef(fit)
+})
+samp_distn%>%t%>%as.data.frame%>%summarize_all(sd)
+```
+*The standard error for the bootstrap is the highest, then original and robust has the smallest SE values. The p-value for the bootstrap is bigger than the original SE p-value and robust SE p-value. *
+
+### Logistic Regression Model:
+```{R}
+library(tidyverse)
+library(lmtest)
+library(plotROC)
+data <- CAS%>%mutate(y=ifelse(grades=="KK-08",1,0))
+head(data)
+fit2<-glm(y~english,data=data,,family=binomial(link="logit"))
+coeftest(fit2)
+exp(coef(fit))
+#For students=0, log odds is 1.904, so e^1.904 = 6.7127
+#For students=1, log odds is 1.904 + -0.0079 so e^1.899 = 6.679
+logistic<-function(x){exp(x)/(1+exp(x))}
+#confusion matrix
+table(truth=data$grades, prediction=data$english>1)%>%addmargins
+#accuracy
+(56+281)/420
+#TNR specificity
+281/359
+#TPR sensitivity
+56/61
+#PPV precision
+56/337
+#AUC
+widths<-diff(data$y)
+heights<-vector()
+for(i in 1:100) heights[i]<-data$y[i]+data$y[i+1]
+AUC<-sum(heights*widths/2)
+AUC%>%round(3)
+
+#density plot
+CAS$logit<-predict(fit2,type="link")
+CAS%>%ggplot()+geom_density(aes(logit,color=grades,fill=grades), alpha=.4)+
+  theme(legend.position=c(.3,.6))+geom_vline(xintercept=2)+xlab("logit (log-odds)") +
+  geom_rug(aes(logit,color=grades))
+
+#ROC
+library(plotROC)
+ROCplot<-ggplot(data)+geom_roc(aes(d=y,m=english), n.cuts=0)
+ROCplot                                           
+calc_auc(ROCplot)
+```
+*The coefficient intercept estimate is 1.904. When increasing 1 english percent, it multiplies the odds by a factor of 6.679. A confusion matrix table was computed to calculate accuracy (0.802), sensitivity (0.918), specificity (0.783) and precision (0.166). The AUC that was calculated is 0.5, which is considered a bad AUC. A density plot was also generated to visualise accuracy, sensitivity, specificity and precision. An ROC curve was also generated and AUC was calculated from the ROC, AUC = 0.417.*
+
+### Logistic Regression Model (part II): 
+```{R}
+#fit model
+library(tidyverse)
+library(lmtest)
+library(pROC)
+library(glmnet)
+class_diag<-function(probs,truth){
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1 
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+k=10
+data1<-data[sample(nrow(data)),]
+folds<-cut(seq(1:nrow(data)),breaks=k,labels=F)
+diags<-NULL 
+for(i in 1:k){
+  train<-data1[folds!=i,]   
+  test<-data1[folds==i,]
+  truth<-test$y
+  fit<-glm(y~english,data=data,family="binomial")
+  probs<-predict(fit,newdata = test,type="response")
+  diags<-rbind(diags,class_diag(probs,truth)) 
+}
+summarize_all(diags,mean)
+
+#10-fold
+k=10
+data <- CAS %>% sample_frac
+data$binary<-ifelse(data$grades=="KK-08",1,0)
+folds <- ntile(1:nrow(data),n=10) 
+diags<-NULL
+for(i in 1:k){
+train <- data[folds!=i,] 
+test <- data[folds==i,] 
+truth <- test$binary 
+fit <- glm(binary~read+math+english+calworks+students+teachers+income+computer+expenditure,
+data=train, family="binomial")
+probs <- predict(fit, newdata=test, type="response")
+diags<-rbind(diags,class_diag(probs,truth))
+}
+diags%>%summarize_all(mean)
+
+#LASSO
+data$binary<-ifelse(data$grades=="KK-08",1,0)
+y<-as.matrix(data$binary)
+x<-model.matrix(binary~read+math+english+calworks+students+teachers+income+computer+expenditure,data=data)[,-1]
+head(x)
+x<-scale(x)
+head(x)
+cv<-cv.glmnet(x,y,family="binomial")
+lasso<-glmnet(x,y,family="binomial",lambda=cv$lambda.1se)
+coef(lasso)
+#10-fold CV
+k=10
+data <- CAS %>% sample_frac 
+folds <- ntile(1:nrow(data),n=10) 
+data$binary<-ifelse(data$grades=="KK-08",1,0)
+diags<-NULL
+for(i in 1:k){
+train <- data[folds!=i,] 
+test <- data[folds==i,] 
+truth <- test$binary 
+fit <- glm(binary~math+expenditure+english,
+data=train, family="binomial")
+probs <- predict(fit, newdata=test, type="response")
+diags<-rbind(diags,class_diag(probs,truth))
+}
+diags%>%summarize_all(mean)
+```
+*The accuracy of the fit model is 0.855, sensitivity is 1, specificity = 0, percision is 0.855 and the AUC is 0.581. The When the 10-fold CV was performed, accuracy = 0.845, sensitivity = 0.984, specificity = 0.054 and percision = 0.857. The AUC was 0.742 which is relatively similar to the average value of the diagnostics. LASSO was performed on the binary variable and all the other variables and the variables that were retained for the 10-fold CV are math and expenditure. The AUC when the 10-fold cross validation was performed is 0.668. From comparing the two models, it did not show the same AUC value. There was an increase in AUC so that does not indicate a lot of overfitting. *

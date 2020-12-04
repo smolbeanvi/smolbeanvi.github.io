@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Vi Le</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on Vi Le</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Fri, 04 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>bloggy</title>
+      <link>/post/2020/12/04/bloggy/</link>
+      <pubDate>Fri, 04 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2020/12/04/bloggy/</guid>
+      <description> Link to project 1
+10*10 ## [1] 100 </description>
+    </item>
+    
+  </channel>
+</rss>

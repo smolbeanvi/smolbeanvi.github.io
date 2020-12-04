@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Vi Le" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 1</title>
+    <meta name="generator" content="Hugo 0.79.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../project/project1/">Project 1</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="vi-le-vtl269" class="section level4">
+<h4>Vi Le vtl269</h4>
+</div>
+<div id="introduction" class="section level3">
+<h3>Introduction:</h3>
+<p><em>The two datasets that I have chosen are MathAchSchool and MathAchieve. The MathAchieve data was acquired by Steve Walker and the MathAchSchool data was made to accompany the MathAch data. I chose these two datasets because I wanted to see the data and the variables that went into it. In the MathAch data, the varaibles are school (school ID) , minority (yes or no factor), sex (male or female), SES (a numerical vector on how many socioeconomic statuses the student faces), MathAch (a numeric vector of mathematics achievement scores) and MEANSES (a numeric vector of the mean SES for the school). Each row in this dataframe contains information for only one student. In the MathAchSchool data, the variables are school (school ID), size (number of students in the school), sector (public or catholic), PRACAD (a numeric vector giving the percentage of students on the academic track), DISCLIM (a numeric vector measuring the discrimination climate), HIMINTY (0 or 1 factor) and MEANSES (a numeric vector giving the mean SES score).</em></p>
+</div>
+<div id="joiningmerging" class="section level3">
+<h3>Joining/Merging:</h3>
+<pre class="r"><code>library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(nlme)
+
+MathAchSchool &lt;- MathAchSchool %&gt;% mutate(School = as.numeric(School))
+MathAchieve &lt;- MathAchieve %&gt;% mutate(School = as.numeric(School))
+NewMathAch &lt;- MathAchieve %&gt;% full_join(MathAchSchool, by = &quot;School&quot;)
+print(NewMathAch)</code></pre>
+<pre><code>## Grouped Data: MathAch ~ SES | School
+##   School Minority    Sex    SES MathAch MEANSES.x Size Sector PRACAD DISCLIM
+## 1     59       No Female -1.528   5.876    -0.428 1061 Public   0.46  -1.059
+## 2     59       No Female -0.588  19.708    -0.428 1061 Public   0.46  -1.059
+## 3     59       No   Male -0.528  20.349    -0.428 1061 Public   0.46  -1.059
+## 4     59       No   Male -0.668   8.781    -0.428 1061 Public   0.46  -1.059
+## 5     59       No   Male -0.158  17.898    -0.428 1061 Public   0.46  -1.059
+## 6     59       No   Male  0.022   4.583    -0.428 1061 Public   0.46  -1.059
+## 7     59       No Female -0.618  -2.832    -0.428 1061 Public   0.46  -1.059
+## 8     59       No   Male -0.998   0.523    -0.428 1061 Public   0.46  -1.059
+##   HIMINTY MEANSES.y
+## 1       0    -0.219
+## 2       0    -0.219
+## 3       0    -0.219
+## 4       0    -0.219
+## 5       0    -0.219
+## 6       0    -0.219
+## 7       0    -0.219
+## 8       0    -0.219
+##  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 7177 rows ]</code></pre>
+<p><em>I chose to run a full join to merge my datasets together. For the MathAch dataset, there were 7185 observations and in the MathAchSchool dataset, there were 160 observations. For the new df(NewMatchAch), there were no observations that were dropped. All the variables from the two datasets merged together to give an overall greater view of the data since the schools in both datasets are correlated. They share the same school ID. The difference is in MathAchieve, it shows every student individually and their minority, sex, SES, etc. </em></p>
+</div>
+<div id="tidying" class="section level3">
+<h3>Tidying:</h3>
+<pre class="r"><code>library(tidyverse)
+longdata &lt;- NewMathAch %&gt;% pivot_longer(cols = c(&quot;MEANSES.x&quot;, 
+    &quot;MEANSES.y&quot;))
+print(longdata)</code></pre>
+<pre><code>## # A tibble: 14,370 x 12
+##    School Minority Sex      SES MathAch  Size Sector PRACAD DISCLIM HIMINTY
+##     &lt;dbl&gt; &lt;fct&gt;    &lt;fct&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;  
+##  1     59 No       Fema… -1.53     5.88  1061 Public   0.46   -1.06 0      
+##  2     59 No       Fema… -1.53     5.88  1061 Public   0.46   -1.06 0      
+##  3     59 No       Fema… -0.588   19.7   1061 Public   0.46   -1.06 0      
+##  4     59 No       Fema… -0.588   19.7   1061 Public   0.46   -1.06 0      
+##  5     59 No       Male  -0.528   20.3   1061 Public   0.46   -1.06 0      
+##  6     59 No       Male  -0.528   20.3   1061 Public   0.46   -1.06 0      
+##  7     59 No       Male  -0.668    8.78  1061 Public   0.46   -1.06 0      
+##  8     59 No       Male  -0.668    8.78  1061 Public   0.46   -1.06 0      
+##  9     59 No       Male  -0.158   17.9   1061 Public   0.46   -1.06 0      
+## 10     59 No       Male  -0.158   17.9   1061 Public   0.46   -1.06 0      
+## # … with 14,360 more rows, and 2 more variables: name &lt;chr&gt;, value &lt;dbl&gt;</code></pre>
+<pre class="r"><code>longdata %&gt;% pivot_wider(names_from = &quot;name&quot;, values_from = &quot;value&quot;)</code></pre>
+<pre><code>## # A tibble: 7,185 x 12
+##    School Minority Sex      SES MathAch  Size Sector PRACAD DISCLIM HIMINTY
+##     &lt;dbl&gt; &lt;fct&gt;    &lt;fct&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;  
+##  1     59 No       Fema… -1.53    5.88   1061 Public   0.46   -1.06 0      
+##  2     59 No       Fema… -0.588  19.7    1061 Public   0.46   -1.06 0      
+##  3     59 No       Male  -0.528  20.3    1061 Public   0.46   -1.06 0      
+##  4     59 No       Male  -0.668   8.78   1061 Public   0.46   -1.06 0      
+##  5     59 No       Male  -0.158  17.9    1061 Public   0.46   -1.06 0      
+##  6     59 No       Male   0.022   4.58   1061 Public   0.46   -1.06 0      
+##  7     59 No       Fema… -0.618  -2.83   1061 Public   0.46   -1.06 0      
+##  8     59 No       Male  -0.998   0.523  1061 Public   0.46   -1.06 0      
+##  9     59 No       Fema… -0.888   1.53   1061 Public   0.46   -1.06 0      
+## 10     59 No       Male  -0.458  21.5    1061 Public   0.46   -1.06 0      
+## # … with 7,175 more rows, and 2 more variables: MEANSES.x &lt;dbl&gt;,
+## #   MEANSES.y &lt;dbl&gt;</code></pre>
+<p><em>To show both skills of tidying, I made the dataset longer by conjoining the MEANSES.x and MEANSES.y columns together. By doing so, this allowed the data of MEANSES.x and MEANSES.y to be viewed right under each other rather than being six columns apart. I then tidyed the dataset back to the original (but better), since now the two columns are right next to one another.</em></p>
+</div>
+<div id="wrangling" class="section level3">
+<h3>Wrangling:</h3>
+<pre class="r"><code>library(dplyr)
+sub_NewMathAch &lt;- NewMathAch %&gt;% mutate(subMEANSES = MEANSES.x - 
+    MEANSES.y)
+print(sub_NewMathAch)</code></pre>
+<pre><code>## Grouped Data: MathAch ~ SES | School
+##   School Minority    Sex    SES MathAch MEANSES.x Size Sector PRACAD DISCLIM
+## 1     59       No Female -1.528   5.876    -0.428 1061 Public   0.46  -1.059
+## 2     59       No Female -0.588  19.708    -0.428 1061 Public   0.46  -1.059
+## 3     59       No   Male -0.528  20.349    -0.428 1061 Public   0.46  -1.059
+## 4     59       No   Male -0.668   8.781    -0.428 1061 Public   0.46  -1.059
+## 5     59       No   Male -0.158  17.898    -0.428 1061 Public   0.46  -1.059
+## 6     59       No   Male  0.022   4.583    -0.428 1061 Public   0.46  -1.059
+## 7     59       No Female -0.618  -2.832    -0.428 1061 Public   0.46  -1.059
+##   HIMINTY MEANSES.y subMEANSES
+## 1       0    -0.219     -0.209
+## 2       0    -0.219     -0.209
+## 3       0    -0.219     -0.209
+## 4       0    -0.219     -0.209
+## 5       0    -0.219     -0.209
+## 6       0    -0.219     -0.209
+## 7       0    -0.219     -0.209
+##  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 7178 rows ]</code></pre>
+<pre class="r"><code>quantile(sub_NewMathAch$subMEANSES)</code></pre>
+<pre><code>##     0%    25%    50%    75%   100% 
+## -1.722 -0.402  0.042  0.392  1.507</code></pre>
+<pre class="r"><code>sub_NewMathAch %&gt;% dplyr::select(Minority, SES, Sector, subMEANSES) %&gt;% 
+    glimpse() %&gt;% arrange(SES)</code></pre>
+<pre><code>## Rows: 7,185
+## Columns: 4
+## $ Minority   &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, No, No, No, No…
+## $ SES        &lt;dbl&gt; -1.528, -0.588, -0.528, -0.668, -0.158, 0.022, -0.618, -0.…
+## $ Sector     &lt;fct&gt; Public, Public, Public, Public, Public, Public, Public, Pu…
+## $ subMEANSES &lt;dbl&gt; -0.209, -0.209, -0.209, -0.209, -0.209, -0.209, -0.209, -0…</code></pre>
+<pre><code>##    Minority    SES   Sector subMEANSES
+## 1        No -3.758   Public      0.195
+## 2       Yes -2.838 Catholic      0.301
+## 3       Yes -2.508   Public      0.232
+## 4       Yes -2.508 Catholic     -0.835
+## 5       Yes -2.498   Public     -0.623
+## 6       Yes -2.498   Public     -0.357
+## 7       Yes -2.498 Catholic     -0.310
+## 8       Yes -2.468   Public     -0.118
+## 9       Yes -2.398   Public     -0.484
+## 10      Yes -2.328   Public     -0.118
+## 11       No -2.328   Public      0.238
+## 12      Yes -2.328   Public     -0.749
+## 13      Yes -2.298   Public      0.225
+## 14      Yes -2.248   Public     -0.531
+## 15       No -2.248 Catholic     -0.079
+## 16       No -2.218 Catholic     -0.402
+## 17      Yes -2.218   Public      0.225
+## 18      Yes -2.188   Public     -0.229
+## 19       No -2.188   Public     -0.879
+## 20       No -2.178   Public     -0.879
+## 21      Yes -2.148   Public     -0.623
+## 22      Yes -2.148 Catholic     -0.519
+## 23      Yes -2.148 Catholic     -0.835
+## 24      Yes -2.138 Catholic     -0.788
+## 25      Yes -2.128 Catholic     -1.520
+##  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 7160 rows ]</code></pre>
+<pre class="r"><code>sub_NewMathAch %&gt;% filter(sub_NewMathAch$Minority == &quot;Yes&quot;) %&gt;% 
+    group_by(Sector) %&gt;% count(Sector, sort = TRUE)</code></pre>
+<pre><code>## # A tibble: 2 x 2
+## # Groups:   Sector [2]
+##   Sector       n
+##   &lt;fct&gt;    &lt;int&gt;
+## 1 Public    1095
+## 2 Catholic   879</code></pre>
+<pre class="r"><code>submean &lt;- sub_NewMathAch %&gt;% group_by(Minority, Sector) %&gt;% 
+    summarize(mean(subMEANSES, na.rm = T))
+print(submean)</code></pre>
+<pre><code>## # A tibble: 4 x 3
+## # Groups:   Minority [2]
+##   Minority Sector   `mean(subMEANSES, na.rm = T)`
+##   &lt;fct&gt;    &lt;fct&gt;                            &lt;dbl&gt;
+## 1 No       Public                          0.224 
+## 2 No       Catholic                       -0.0576
+## 3 Yes      Public                         -0.0837
+## 4 Yes      Catholic                       -0.420</code></pre>
+<pre class="r"><code>sub_NewMathAch %&gt;% group_by(Sex, MathAch) %&gt;% summarize(min(SES))</code></pre>
+<pre><code>## # A tibble: 6,511 x 3
+## # Groups:   Sex [2]
+##    Sex   MathAch `min(SES)`
+##    &lt;fct&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+##  1 Male    -2.83     -0.878
+##  2 Male    -2.72     -1.12 
+##  3 Male    -2.66      0.712
+##  4 Male    -2.63     -0.858
+##  5 Male    -2.56     -0.188
+##  6 Male    -2.54     -0.368
+##  7 Male    -2.54     -0.948
+##  8 Male    -2.5       0.202
+##  9 Male    -2.50      0.202
+## 10 Male    -2.48      0.202
+## # … with 6,501 more rows</code></pre>
+<pre class="r"><code>sd(sub_NewMathAch$SES)</code></pre>
+<pre><code>## [1] 0.7793552</code></pre>
+<pre class="r"><code>sub_NewMathAch %&gt;% group_by(School) %&gt;% summarize(Size = n())</code></pre>
+<pre><code>## # A tibble: 160 x 2
+##    School  Size
+##     &lt;dbl&gt; &lt;int&gt;
+##  1      1    14
+##  2      2    32
+##  3      3    48
+##  4      4    37
+##  5      5    53
+##  6      6    25
+##  7      7    44
+##  8      8    34
+##  9      9    51
+## 10     10    30
+## # … with 150 more rows</code></pre>
+<pre class="r"><code>cormat &lt;- sub_NewMathAch %&gt;% select_if(is.numeric) %&gt;% cor(use = &quot;pair&quot;)
+print(cormat)</code></pre>
+<pre><code>##                 School          SES      MathAch    MEANSES.x         Size
+## School      1.00000000  0.240930019  0.263737499  0.454034510  0.045987391
+## SES         0.24093002  1.000000000  0.360755628  0.530622075 -0.001226933
+## MathAch     0.26373750  0.360755628  1.000000000  0.343722080  0.006382007
+## MEANSES.x   0.45403451  0.530622075  0.343722080  1.000000000 -0.002259687
+## Size        0.04598739 -0.001226933  0.006382007 -0.002259687  1.000000000
+## PRACAD     -0.19319181 -0.004426808 -0.019948424 -0.008366211 -0.329598263
+## DISCLIM     0.07166722  0.003102335 -0.012160049  0.005825166  0.374672103
+## MEANSES.y  -0.06078472  0.038770798 -0.001452268  0.072993824 -0.172568599
+## subMEANSES  0.37949415  0.363256280  0.254723158  0.684638943  0.124451031
+##                  PRACAD      DISCLIM    MEANSES.y subMEANSES
+## School     -0.193191808  0.071667215 -0.060784722  0.3794941
+## SES        -0.004426808  0.003102335  0.038770798  0.3632563
+## MathAch    -0.019948424 -0.012160049 -0.001452268  0.2547232
+## MEANSES.x  -0.008366211  0.005825166  0.072993824  0.6846389
+## Size       -0.329598263  0.374672103 -0.172568599  0.1244510
+## PRACAD      1.000000000 -0.634134413  0.660491916 -0.4888827
+## DISCLIM    -0.634134413  1.000000000 -0.381807207  0.2833358
+## MEANSES.y   0.660491916 -0.381807207  1.000000000 -0.6769636
+## subMEANSES -0.488882734  0.283335791 -0.676963590  1.0000000</code></pre>
+<pre class="r"><code>sub_NewMathAch %&gt;% group_by(Minority) %&gt;% summarize(max(SES))</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   Minority `max(SES)`
+##   &lt;fct&gt;         &lt;dbl&gt;
+## 1 No             1.65
+## 2 Yes            2.69</code></pre>
+<p><em>The first summary statistic (SS) I created was to generate a new variable that was the difference between MEANSES.x and MEANSES.y by using the mutate function. Then I used the quantile function to see the quantiles corresponding to the given numeric vector that was just created. The third SS was done to select the following variables: Minority, SES, Sector and subMEANSES and to sort the data frame by SES. This was completed to see if Minority and Sector had a factor of SES. The next SS was a simple one, it was just to see how many students were a minority in the type of school (Public or Catholic). The fifth SS was to group by Minority and Sector and the mean of the subtracted MEANSES values.</em></p>
+<p><em>The sixth SS was created to group by Sex and MathAch (a numeric vector of mathematics achievement scores) and see the minimum SES values. The next SS was to see what the standard deviation of the values in SES. The eigthth SS was to see the number of observations (the size) in each school. The next SS was to compute matrices between all the numeric variables in the dataset. The last SS was to was created to group by Minority and see the max SES values that are correlated with the minority status.</em></p>
+</div>
+<div id="visualising" class="section level3">
+<h3>Visualising:</h3>
+<pre class="r"><code>ggplot(sub_NewMathAch, aes(x = Minority, y = MathAch, fill = Sex)) + 
+    scale_y_continuous(name = &quot;MathAch Scores&quot;, limits = c(0, 
+        25)) + geom_bar(aes(y = MathAch), stat = &quot;summary&quot;, position = &quot;dodge&quot;) + 
+    geom_errorbar(stat = &quot;summary&quot;, position = &quot;dodge&quot;) + ggtitle(&quot;Does Minority and Sex Affect MathAch Scores?&quot;) + 
+    scale_fill_brewer(palette = &quot;Oranges&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot() + geom_point(data = sub_NewMathAch, aes(x = PRACAD, 
+    y = SES, shape = Sector, color = Sector)) + ggtitle(&quot;Does Sector and SES Play a Role on Academic Track?&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>sub_NewMathAch %&gt;% select_if(is.numeric) %&gt;% cor %&gt;% as.data.frame %&gt;% 
+    rownames_to_column %&gt;% pivot_longer(-1) %&gt;% ggplot(aes(rowname, 
+    name, fill = value)) + geom_tile() + geom_text(aes(label = round(value, 
+    2))) + scale_fill_gradient2(low = &quot;yellow&quot;, mid = &quot;pink&quot;, 
+    high = &quot;blue&quot;) + xlab(&quot;&quot;) + ylab(&quot;&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" /> <em>For the first plot, I wanted to see if there was an apparent trend for being a minority or not. Additionally, I wanted to see if sex while being a minority played a role on MathAch scores. From this plot, it can be concluded that if you are a minority, your scores will be lower. It also tells you that sex plays a role on your scores. In both scenarios, minority or not, females scored lower in general. If you are a female minority, your scores averaged out to be the lowest. Non-minority males score the highest.</em></p>
+<p><em>The second plot depicts the type of school you go to, SES (a numeric vector of socio-economic status), and PRACAD (a numeric vector giving the percentage of students on the academic track). For SES, there isn't a clear trend/affect on PRCAD. The values all range with how on track you are, no clear relationship is shown. On the otherhand, Sector does seem to have an affect on PRACAD. Those who attend a Catholic school seem to be more on track than those that attend Public school.</em></p>
+<p><em>The correlation heatmap shows you all the correlations between the multiple, numeric vairables in the dataset. When the same variables align with themselves, the correlation is 1. This is because they are the same values so their correlation value is a perfect 1. This is also because the heatmap is diagonally symmetrical. All the values in this heatmap ranges from -1 to 1, values that are closer to zero means that there is no linear trend between the two variables. Values closer to 1 means that they are more related. A correlation closer to -1 is similar, but instead of both increasing one variable will decrease as the other increases. Values above 0 means that they are positively correlated while values below 0 means that they are negatively correlated.</em></p>
+</div>
+<div id="dimensionality-reduction" class="section level3">
+<h3>Dimensionality Reduction</h3>
+<pre class="r"><code>library(cluster)
+pam1 &lt;- sub_NewMathAch %&gt;% pam(k = 6)
+print(pam1)</code></pre>
+<pre><code>## Medoids:
+##        ID School Minority Sex    SES MathAch MEANSES.x Size Sector PRACAD
+## [1,] 2129     81        1   1  0.702  14.653     0.666 1118      2   0.77
+## [2,] 2736    102        1   1  0.432  12.909    -0.085 1453      1   0.25
+## [3,] 6296     54        2   2 -0.858  12.167     0.161  375      2   0.91
+## [4,] 1691     83        1   1 -0.438  13.207    -0.296  720      2   0.60
+## [5,] 4360     58        2   2 -0.688  11.178    -0.516 1881      1   0.33
+## [6,] 6834    112        1   2  0.162  14.464     0.259 2403      1   0.39
+##      DISCLIM HIMINTY MEANSES.y subMEANSES
+## [1,]  -1.286       1     0.426      0.240
+## [2,]   2.756       2    -0.670      0.585
+## [3,]  -1.521       1     0.411     -0.250
+## [4,]  -0.070       2     0.028     -0.324
+## [5,]   0.840       1     0.134     -0.650
+## [6,]   1.024       1     0.013      0.246
+## Clustering vector:
+##   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [38] 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3
+##  [75] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 7085 entries ]
+## Objective function:
+##    build     swap 
+## 119.6837 109.0092 
+## 
+## Available components:
+##  [1] &quot;medoids&quot;    &quot;id.med&quot;     &quot;clustering&quot; &quot;objective&quot;  &quot;isolation&quot; 
+##  [6] &quot;clusinfo&quot;   &quot;silinfo&quot;    &quot;diss&quot;       &quot;call&quot;       &quot;data&quot;</code></pre>
+<pre class="r"><code>clust &lt;- sub_NewMathAch %&gt;% mutate(cluster = as.factor(pam1$clustering))
+clust %&gt;% ggplot(aes(School, DISCLIM, color = Minority, shape = cluster)) + 
+    geom_point() + ggtitle(&quot; Cluster on Discrimination Climate, School and Minority Status&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /> <em>From viewing the clustering plot, there seems to be an almost even distrubution among the whole plot. The discrimination climate (DISCLIM) variable has no heavily concentrated regions in any of the schools. I chose to cluster with the school and minority variables since I thought the DISCLIM values would be heavily concentrated with the schools that have more students who are minorities, but this doesn't seem like it's the case.</em></p>
+<hr />
+<pre><code>## R version 3.6.1 (2019-07-05)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 18.04.5 LTS
+## 
+## Matrix products: default
+## BLAS:   /stor/system/opt/R/R-3.6.1/lib/R/lib/libRblas.so
+## LAPACK: /stor/system/opt/R/R-3.6.1/lib/R/lib/libRlapack.so
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] cluster_2.1.0   nlme_3.1-148    forcats_0.5.0   stringr_1.4.0  
+##  [5] dplyr_1.0.1     purrr_0.3.4     readr_1.3.1     tidyr_1.1.1    
+##  [9] tibble_3.0.3    ggplot2_3.3.2   tidyverse_1.3.0
+## 
+## loaded via a namespace (and not attached):
+##  [1] tidyselect_1.1.0   xfun_0.16          lattice_0.20-41    haven_2.3.1       
+##  [5] colorspace_1.4-1   vctrs_0.3.2        generics_0.0.2     htmltools_0.5.0   
+##  [9] yaml_2.2.1         utf8_1.1.4         blob_1.2.1         rlang_0.4.7       
+## [13] pillar_1.4.6       glue_1.4.2         withr_2.2.0        DBI_1.1.0         
+## [17] RColorBrewer_1.1-2 dbplyr_1.4.4       modelr_0.1.8       readxl_1.3.1      
+## [21] lifecycle_0.2.0    munsell_0.5.0      blogdown_0.20      gtable_0.3.0      
+## [25] cellranger_1.1.0   rvest_0.3.6        evaluate_0.14      labeling_0.3      
+## [29] knitr_1.29         fansi_0.4.1        broom_0.7.0        Rcpp_1.0.5        
+## [33] scales_1.1.1       backports_1.1.8    formatR_1.7        jsonlite_1.7.0    
+## [37] farver_2.0.3       fs_1.5.0           hms_0.5.3          digest_0.6.25     
+## [41] stringi_1.5.3      bookdown_0.20      grid_3.6.1         cli_2.0.2         
+## [45] tools_3.6.1        magrittr_1.5       crayon_1.3.4       pkgconfig_2.0.3   
+## [49] ellipsis_0.3.1     xml2_1.3.2         reprex_0.3.0       lubridate_1.7.9   
+## [53] assertthat_0.2.1   rmarkdown_2.3      httr_1.4.2         rstudioapi_0.11   
+## [57] R6_2.4.1           compiler_3.6.1</code></pre>
+<pre><code>## [1] &quot;2020-12-03 11:41:36 CST&quot;</code></pre>
+<pre><code>##                                       sysname 
+##                                       &quot;Linux&quot; 
+##                                       release 
+##                          &quot;4.15.0-117-generic&quot; 
+##                                       version 
+## &quot;#118-Ubuntu SMP Fri Sep 4 20:02:41 UTC 2020&quot; 
+##                                      nodename 
+##                  &quot;educcomp04.ccbb.utexas.edu&quot; 
+##                                       machine 
+##                                      &quot;x86_64&quot; 
+##                                         login 
+##                                     &quot;unknown&quot; 
+##                                          user 
+##                                      &quot;vtl269&quot; 
+##                                effective_user 
+##                                      &quot;vtl269&quot;</code></pre>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>
