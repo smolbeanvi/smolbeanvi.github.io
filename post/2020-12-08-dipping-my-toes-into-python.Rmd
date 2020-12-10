@@ -1,0 +1,43 @@
+---
+title: "Dipping My Toes into Python"
+author: "Vi Le"
+date: '2020-12-08'
+description: ''
+slug: dipping-my-toes-into-python
+tags: []
+categories: []
+---
+
+###**Python, it was a language I never knew I loved, and here's why:**
+
+*We started python in class pretty late. I was excited to learn a new language because I hear all these great things about how it is simpler than R. It was very easy to use and the format was easy to understand. Using the servers probably helped with that since everything was already uploaded for us. The two languages paired so well with one another, the complementation was much needed. I'll show what I mean by that with reticulate later in this post!*
+
+
+**Python Code:**
+```{python}
+for i in range(1,5):
+    print(i)
+    if i == 3:
+        break
+        
+if True:
+    print('project3')
+    a = 3
+
+```
+
+**Reticulating:**
+```{R}
+library(reticulate)
+rcode <- "Can you believe"
+```
+*A simple R code in R.*
+```{python}
+python = "this works?"
+print(r.rcode, python)
+```
+*Python code in R, isn't it amazing how python works in R markdown? From the lines above, I just used R and python and I made them take to each other!*
+
+![](/post/2020-12-08-dipping-my-toes-into-python_files/python.png)
+
+![](/post/2020-12-08-dipping-my-toes-into-python_files/r3.jpg){width=35% height=35%}

@@ -1,13 +1,25 @@
 ---
-title: bloggy
-author: ''
+title: food bloggy 
+author: 'Vi Le'
 date: '2020-12-04'
 slug: bloggy
 categories: []
 tags: []
 description: ''
 ---
-[Link to project 1](/project/project1/)
+![](/post/2020-12-04-bloggy_files/IMG_9807.jpg)
+*This was how my Thanksgiving looked like!*
+![](/post/2020-12-04-bloggy_files/IMG_9830.JPG)
+*A cranberry citrus tart, recipe was from Claire Saffitz.*
+![](/post/2020-12-04-bloggy_files/small.jpeg)
+*Peaches from my mom's tree were turned into this beautiful peach crumble bar*
+![](/post/2020-12-04-bloggy_files/IMG_6702_polarr.JPEG)
+*These are my crispy chocolate chip cookies*
+![](/post/2020-12-04-bloggy_files/IMG_7812.JPG)
+*I made a dinner celebrating my first real apartment for my family. I made roasted garlic mashed potatoes, american wagyu ribeye, mallard duck breast, A5 miyazaki wagyu, broccolini and campari tomatoes!* 
+![](/post/2020-12-04-bloggy_files/IMG_7946_polarr.jpg)
+*I made 'cwispy' fried chicken for my dad's birthday!*
+![](/post/2020-12-04-bloggy_files/IMG_8711.jpg)
+*My sister wanted something nice for her birthday during quarantine, so I did an at home omakase for the family! This is a fried small corn tortilla with tuna and black caviar.*
 ```{R}
-10*10
 ```
