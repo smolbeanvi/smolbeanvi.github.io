@@ -6,8 +6,33 @@ hiderelated: true
 hidediscus: true
 ---
 
-<center>
-<object data="/resume.pdf" type="application/pdf" >
-<embed src="/resume.pdf" type="application/pdf" style="min-height:100vh;width:100%" />
-</object>
-</center>
+#**VI LE**
+######Email:         t.vile00@utexas.edu
+
+###**Education**
+####The University of Texas at Austin
+######BSA in Biology | 2021
+######Pre-Health Professions Certificate
+
+###**Skills**
++ Good at loving my dogs
++ Doing this project in a timely manner
+
+###**Interests**
++ Baking and cooking
++ Taking photos of my creations 
+
+###**Lab Experience**
+######Isotope Geochemistry Lab Assistant
++ Performed the chemistry that was needed for the samples collected
++ Detail-oriented with the equipment that was used
+
+###**Work Experience**
+######Team Member at Target
++ Guest services
++ Produce trained
++ Expert Specialty Sales
+
+###**Accomplishments**
++ Houston Livestock Show & Rodeo Scholar
++ Recipient of the Anna Mae Hutchison Endowed Scholarship Award
